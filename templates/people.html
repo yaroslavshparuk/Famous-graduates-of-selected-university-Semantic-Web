@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% for item in disciplines %}
+        <span> <a href="/universities/{{name}}/{{item}}"> {{ item }}</a></span>
+    {% endfor %}
+
+    {% for item in data %}
+        <div>
+            <img src="{{item.pict.value}}">
+            <a href="/universities/{{item.person.value}}"> {{ item.person.value }}</a> 
+        </div>
+    {% endfor %}
+
+</body>
+</html>
