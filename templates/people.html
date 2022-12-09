@@ -7,15 +7,29 @@
     <title>Document</title>
 </head>
 <body>
+<div> <a href="/universities"> Back to universities</a></div>
     {% for item in disciplines %}
         <span> <a href="/universities/{{name}}/{{item}}"> {{ item }}</a></span>
     {% endfor %}
 
+<div>
+    <label for="name">Search by discipline:</label>
+    <input type="text" id="name" name="name">
+</div>
+
+
     {% for item in data %}
+        <br>
         <div>
             <img src="{{item.pict.value}}">
-            <a href="/universities/{{item.person.value}}"> {{ item.person.value }}</a> 
         </div>
+        <div>
+            {{ item.desc.value }}
+        </div>
+        <div>
+            <a href="{{ item.topic.value }}">Wikipedia page</a>
+        </div>
+        <br>
     {% endfor %}
 
 </body>

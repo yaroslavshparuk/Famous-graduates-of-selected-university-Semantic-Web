@@ -34,17 +34,22 @@ def universities():
 @app.route('/universities/<name>', defaults={'discipline': None}, methods=['GET'])
 @app.route('/universities/<name>/<discipline>', methods=['GET'])
 def universitiesFor(name, discipline):
-    query = ''
+    query = 'SELECT ?person str(?descObj) as ?desc ?pict ?topic'
     disciplines = ['Chemistry', 'Physics', 'Botanics', 'Surgery', 'Astronomy', 'Geophysics', 'Mathematics']
     if not discipline:
-        query = 'SELECT ?person str(?descObj) as ?desc ?pict WHERE { ?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
+        query += ' WHERE { ?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
                 'dbo:abstract ?descObj ;' \
+                'foaf:isPrimaryTopicOf ?topic ;' \
                 'dbo:thumbnail ?pict ' \
                 'FILTER (LANG(?descObj) = "en") }'
     else:
-        query = 'SELECT ?person WHERE { ?person dbo:academicDiscipline dbr:' + discipline +\
-                ' . ?person dbo:almaMater ;' \
-                'dbr:' + name + ' . }'
+        query +=' WHERE {' \
+                '?person dbo:academicDiscipline dbr:' + discipline + '.'\
+                ' ?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
+                'dbo:abstract ?descObj ;' \
+                'foaf:isPrimaryTopicOf ?topic ;' \
+                'dbo:thumbnail ?pict ' \
+                'FILTER (LANG(?descObj) = "en") }'
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
 
