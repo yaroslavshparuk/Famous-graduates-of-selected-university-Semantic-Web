@@ -1,6 +1,6 @@
 <div class="m-auto p-5 w-50" *ngFor="let univ of universities">
-    <button type="button" class="btn btn-light">
-        <img class="mb-3" src="{{univ.pict}}">
+    <button type="button" class="btn btn-light" (click)="goToUniversity(univ.link ?? '')">
+        <img class="mb-3" src="{{univ.pict}}" onerror="this.src='assets/image-not-found.jpg'">
     </button>
-    <div class="mb-3 mw-25">{{univ.desc}} <a href="{{univ.wiki}}" class="link-primary">Wiki</a></div>
+    <div class="mb-3 mw-25">{{univ.desc}} <a href="{{univ.wiki}}" class="link-primary">More infomation</a></div>
 </div>

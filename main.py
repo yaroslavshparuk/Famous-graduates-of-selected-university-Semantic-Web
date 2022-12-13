@@ -7,8 +7,7 @@ CORS(app)
 
 sparql = SPARQLWrapper('https://dbpedia.org/sparql')
 
-
-def fetchResponseFromSPARQLWrapper(res):
+def mapFromSPARQL(res):
  return res['results']['bindings']
 
 @app.route('/universities', methods=['GET'])
@@ -28,7 +27,7 @@ def universities():
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
 
-    result = fetchResponseFromSPARQLWrapper(sparql.query().convert())
+    result = mapFromSPARQL(sparql.query().convert())
     for item in result:
         item['desc'] = item['desc']['value']
         item['link'] = item['link']['value']
@@ -36,32 +35,45 @@ def universities():
         item['pict'] = item['pict']['value']
     return result
 
-@app.route('/universities/<name>', defaults={'discipline': None}, methods=['GET'])
-@app.route('/universities/<name>/<discipline>', methods=['GET'])
-def universitiesFor(name, discipline):
-    query = 'SELECT ?person str(?descObj) as ?desc ?pict ?topic'
-    disciplines = ['Chemistry', 'Physics', 'Botanics', 'Surgery', 'Astronomy', 'Geophysics', 'Mathematics']
-    if not discipline:
-        query += ' WHERE { ?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
-                'dbo:abstract ?descObj ;' \
-                'foaf:isPrimaryTopicOf ?topic ;' \
-                'dbo:thumbnail ?pict ' \
-                'FILTER (LANG(?descObj) = "en") }'
-    else:
-        query +=' WHERE {' \
-                '?person dbo:academicDiscipline dbr:' + discipline + '.'\
+
+@app.route('/graduates/<name>', methods=['GET'])
+def graduates(name):
+    query = 'SELECT str(?descObj) as ?desc ?pict ?wiki WHERE {' \
                 ' ?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
                 'dbo:abstract ?descObj ;' \
-                'foaf:isPrimaryTopicOf ?topic ;' \
+                'foaf:isPrimaryTopicOf ?wiki ;' \
                 'dbo:thumbnail ?pict ' \
                 'FILTER (LANG(?descObj) = "en") }'
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
+    print(query)
+    result = mapFromSPARQL(sparql.query().convert())
+    for item in result:
+        item['desc'] = item['desc']['value']
+        item['wiki'] = item['wiki']['value']
+        item['pict'] = item['pict']['value']
+    return result
 
-    result = sparql.query().convert()
-    response = fetchResponseFromSPARQLWrapper(result)
+@app.route('/graduates/<name>/<discipline>', methods=['GET'])
+def graduatesWithDiscipline(name, discipline):
+    query = 'SELECT str(?descObj) as ?desc ?pict ?wiki WHERE {' \
+                '?person dbo:academicDiscipline dbr:' + discipline + '.'\
+                '?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
+                'dbo:abstract ?descObj ;' \
+                'foaf:isPrimaryTopicOf ?wiki ;' \
+                'dbo:thumbnail ?pict ' \
+                'FILTER (LANG(?descObj) = "en") }'
+    print(query)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
 
-    return render_template('people.html', data=response, disciplines=disciplines, name=name)
+    result = mapFromSPARQL(sparql.query().convert())
+    for item in result:
+        item['desc'] = item['desc']['value']
+        item['wiki'] = item['wiki']['value']
+        item['pict'] = item['pict']['value']
+    return result
+
 
 if __name__ == '__main__':
     app.run(debug=True)
