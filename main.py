@@ -14,22 +14,27 @@ def fetchResponseFromSPARQLWrapper(res):
 @app.route('/universities', methods=['GET'])
 def universities():
     query = """
-        SELECT ?universities str(?nameObj) as ?name
+        SELECT ?link ?wiki str(?descObj) as ?desc ?pict
         WHERE {
-            ?universities rdf:type dbo:University ;
-                        dbp:name ?nameObj ;
+            ?link rdf:type dbo:University ;
+                        dbo:abstract ?descObj ;
+                        dbo:thumbnail ?pict ;
+                        foaf:isPrimaryTopicOf ?wiki ;
 			dbo:country dbr:Ukraine
+        FILTER (LANG(?descObj) = "en")
         }
         """
 
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
 
-    result = sparql.query().convert()
-    response = fetchResponseFromSPARQLWrapper(result)
-    for item in response:
-        item['universities']['value'] = item['universities']['value'].split('/')[len(item['universities']['value'].split('/')) - 1]
-    return render_template('universities.html', data=response)
+    result = fetchResponseFromSPARQLWrapper(sparql.query().convert())
+    for item in result:
+        item['desc'] = item['desc']['value']
+        item['link'] = item['link']['value']
+        item['wiki'] = item['wiki']['value']
+        item['pict'] = item['pict']['value']
+    return result
 
 @app.route('/universities/<name>', defaults={'discipline': None}, methods=['GET'])
 @app.route('/universities/<name>/<discipline>', methods=['GET'])
