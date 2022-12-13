@@ -1,14 +1,12 @@
+
 <div class="d-flex flex-row w-50">
+  <button type="button" class="btn m-4 p-3 btn-primary btn-sm" (click)="router.navigateByUrl('')" >Go to universities</button>
   <div class="m-2 w-50">
     <label for="exampleInputEmail1">Search by academic discipline</label>
     <input class="form-control m-2" [(ngModel)]="searchByDiscipline" type="text" name="searchByDiscipline" id="searchByDiscipline" (ngModelChange)="this.searchByDisciplineUpdate$.next($event)">
   </div>
-  <!-- <div class="m-4 w-50">
-    <label for="showPolitics">Show only politics</label>
-    <input class="form-check-input m-1" type="checkbox" value="{{showPolitics$ | async}}" id="showPolitics">
-  </div> -->
 </div>
-
+<h5>Famous graduates of {{universityName.replaceAll('_', ' ')}}</h5>
 <div class="m-auto p-5 w-50" *ngFor="let univ of graduates | async">
     <img class="mb-3" src="{{univ.pict}}" onerror="this.src='assets/image-not-found.jpg'">
     <div class="mb-3 mw-25">{{univ.desc}} <a href="{{univ.wiki}}" class="link-primary">More infomation</a></div>

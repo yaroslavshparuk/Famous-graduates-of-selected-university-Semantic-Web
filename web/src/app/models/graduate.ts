@@ -3,5 +3,4 @@ export class Graduate {
     link: string | undefined;
     desc: string | undefined;
     pict: string | undefined;
-    party: string | undefined;
 }

@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { GraduatesComponent } from './graduates/graduates.component';
 import { UniversitiesComponent } from './universities/universities.component';
 
-const routes: Routes = [];
-
 @NgModule({
   imports: [RouterModule.forRoot([
-    {path: '', component: UniversitiesComponent},
+    {path: 'universities', component: UniversitiesComponent},
+    {path: '', redirectTo: '/universities', pathMatch: 'full'},
     {path: 'graduates/:universityName', component: GraduatesComponent},
   ])],
   exports: [RouterModule]

@@ -16,6 +16,10 @@ export class ApiService {
     return this.http.get<University[]>(this.BASE + '/universities')
   }
 
+  getUniversitiesByCountry(countryName: string): Observable<University[]> {
+    return this.http.get<University[]>(this.BASE + '/universities/' + countryName)
+  }
+
   getGraduates(universityName: string): Observable<Graduate[]> {
     return this.http.get<Graduate[]>(this.BASE + '/graduates/' + universityName)
   }

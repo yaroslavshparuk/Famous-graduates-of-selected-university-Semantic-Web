@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UrlExtensions } from '../helpers/url-extensions';
+import { debounceTime, distinctUntilChanged, Observable, Subject } from 'rxjs';
+import { Extensions } from '../helpers/extensions';
 import { University } from '../models/university';
 import { ApiService } from '../services/api.service';
 
@@ -10,16 +11,29 @@ import { ApiService } from '../services/api.service';
   styleUrls: ['./universities.component.scss']
 })
 export class UniversitiesComponent implements OnInit {
-  public universities: University[] = [];
+  public universities: Observable<University[]> | undefined;
+  public filterByCountry: string = '';
+  public filterByCountryUpdate$ = new Subject<string>();
   constructor(
     private api: ApiService,
     private route: Router) { }
 
   ngOnInit(): void {
-    this.api.getUniversities().subscribe((x: University[]) => this.universities = x);
+    this.universities = this.api.getUniversities();
+    this.filterByCountryUpdate$.pipe(
+      debounceTime(400),
+      distinctUntilChanged())
+      .subscribe(value => {
+        if(value == ''){
+          this.universities = this.api.getUniversities();
+        }
+        else{
+          this.universities = this.api.getUniversitiesByCountry(value);
+        }
+      });
   }
 
   goToUniversity(name: string){
-    this.route.navigate(['/graduates', UrlExtensions.takeLast(name)]);
+    this.route.navigate(['/graduates', Extensions.takeLastInURL(name)]);
   }
 }

@@ -18,10 +18,10 @@ def universities():
             ?link rdf:type dbo:University ;
                         dbo:abstract ?descObj ;
                         dbo:thumbnail ?pict ;
-                        foaf:isPrimaryTopicOf ?wiki ;
-			dbo:country dbr:Ukraine
+                        foaf:isPrimaryTopicOf ?wiki
         FILTER (LANG(?descObj) = "en")
         }
+        limit 200
         """
 
     sparql.setQuery(query)
@@ -35,9 +35,30 @@ def universities():
         item['pict'] = item['pict']['value']
     return result
 
+@app.route('/universities/<name>', methods=['GET'])
+def universitiesFor(name):
+    query = """
+        SELECT ?link ?wiki str(?descObj) as ?desc ?pict
+        WHERE {
+            ?link rdf:type dbo:University ;
+                        dbo:abstract ?descObj ;
+                        dbo:thumbnail ?pict ;
+                        foaf:isPrimaryTopicOf ?wiki ;
+        """ + 'dbo:country dbr:' + name + ' FILTER (LANG(?descObj) = "en") }'
+
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+
+    result = mapFromSPARQL(sparql.query().convert())
+    for item in result:
+        item['desc'] = item['desc']['value']
+        item['link'] = item['link']['value']
+        item['wiki'] = item['wiki']['value']
+        item['pict'] = item['pict']['value']
+    return result
 
 @app.route('/graduates/<name>', methods=['GET'])
-def graduates(name):
+def graduatesFor(name):
     query = 'SELECT str(?descObj) as ?desc ?pict ?wiki WHERE {' \
                 ' ?person dbo:almaMater|dbo:education  dbr:' + name + ' ;' \
                 'dbo:abstract ?descObj ;' \

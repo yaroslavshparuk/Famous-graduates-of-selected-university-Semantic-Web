@@ -1,6 +1,15 @@
-<div class="m-auto p-5 w-50" *ngFor="let univ of universities">
+<h4 class="mb-3">This is a simple web app to show famous graduates of selected university.</h4>
+<div class="m-2 w-25">
+    <label for="exampleInputEmail1">Filter (by country)</label>
+    <input class="form-control m-2" [(ngModel)]="filterByCountry" type="text" name="filterByCountry" id="filterByCountry" (ngModelChange)="this.filterByCountryUpdate$.next($event)">
+  </div>
+  <h5>Please select desired university</h5>
+<div class="m-auto p-5 w-50" *ngFor="let univ of universities | async">
     <button type="button" class="btn btn-light" (click)="goToUniversity(univ.link ?? '')">
         <img class="mb-3" src="{{univ.pict}}" onerror="this.src='assets/image-not-found.jpg'">
     </button>
     <div class="mb-3 mw-25">{{univ.desc}} <a href="{{univ.wiki}}" class="link-primary">More infomation</a></div>
+</div>
+<div *ngIf="!!(universities | async)">
+    No universities found!
 </div>
